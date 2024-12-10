@@ -1,0 +1,17 @@
+body {
+    padding-top: 56px;
+} 
+
+.jumbotron {
+    background: url('kampus.jpeg') no-repeat center center; 
+    background-size: cover; 
+    color: rgb(255, 255, 255);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+    padding: 5rem 1rem;
+}
+
+.jumbotron-overlay {
+    background: rgba(0,0,0,0.5);
+    padding: 2rem;
+    border-radius: 0.25rem;    
+}
