@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buku Tamu CRUD</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>Buku Tamu</h2>
+      <form id="guestForm" class="mb-4">
+        <div class="form-group">
+          <label for="guestKode">Kode:</label>
+          <input type="text" class="form-control" id="guestKode" required />
+        </div>
+        <div class="form-group">
+          <label for="guestNama">Nama:</label>
+          <input type="text" class="form-control" id="guestNama" required />
+        </div>
+        <div class="form-group">
+          <label for="guestEmail">Email:</label>
+          <input type="email" class="form-control" id="guestEmail" required />
+        </div>
+        <div class="form-group">
+          <label for="guestPesan">Pesan:</label>
+          <input type="text" class="form-control" id="guestPesan" required />
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          Add Guest
+        </button>
+      </form>
+
+      <!-- Table to Display -->
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Pesan</th>
+          </tr>
+        </thead>
+        <tbody id="guestTableBody">
+          <!-- Guest rows will be appended here -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        const script_url =
+          "https://script.google.com/macros/s/AKfycbwOP3f4a28k1LK5wh4E4SILVqlRc3BdrnxLkiUqAuLljwoJIwj5yYItS_7sHq-s5io/exec"; // Replace with your server endpoint
+
+        // Load guests on page load
+        loadGuests();
+        $("#guestForm").on("submit", function (event) {
+          event.preventDefault();
+
+          // Retrieve form field values
+          const kode = $("#guestKode").val();
+          const nama = $("#guestNama").val();
+          const email = $("#guestEmail").val();
+          const pesan = $("#guestPesan").val();
+
+          // Perform AJAX request to insert guest data
+          $.ajax({
+            url: "your-script-url", // Replace with your script URL
+            type: "POST", // Changed to POST for inserting data
+            dataType: "json", // Expected data type from the server
+            data: {
+              kode: kode,
+              nama: nama,
+              email: email,
+              pesan: pesan,
+              action: "insert",
+            },
+            success: function (response) {
+              alert(response.result); // Show success message
+              loadGuests(); // Reload guests after successful submission
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Request failed: ", textStatus, errorThrown);
+            },
+          });
+        });
+
+        // Load guests into the table
+        function loadGuests() {
+          $.ajax({
+            url: script_url,
+            type: "GET",
+            data: { action: "read" },
+            dataType: "json",
+            success: function (response) {
+              const tbody = $("#guestTableBody");
+              tbody.empty(); // Clear the table body
+
+              response.forEach((guest) => {
+                tbody.append(`
+                <tr>
+                  <td>${guest.Kode}</td>
+                  <td>${guest.Nama}</td>
+                  <td>${guest.Email}</td>
+                  <td>${guest.Pesan}</td>
+                </tr>
+              `);
+              });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Request failed: ", textStatus, errorThrown);
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

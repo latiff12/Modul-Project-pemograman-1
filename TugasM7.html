@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lowongan Kerja</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>Lowongan Kerja</h2>
+      <form id="formLowongan">
+        <div class="form-group">
+          <label for="posisi">Posisi</label>
+          <input type="text" class="form-control" id="posisi" required />
+        </div>
+        <div class="form-group">
+          <label for="namaPerusahaan">Nama Perusahaan</label>
+          <input
+            type="text"
+            class="form-control"
+            id="namaPerusahaan"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="lokasi">Lokasi</label>
+          <input type="text" class="form-control" id="lokasi" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Lowongan</button>
+      </form>
+      <div class="mt-5">
+        <h3>Search Lowongan</h3>
+        <input
+          type="text"
+          id="searchQuery"
+          class="form-control"
+          placeholder="Cari lowongan..."
+        />
+      </div>
+      <h3 class="mt-5">Daftar Lowongan</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nomor</th>
+            <th>Posisi</th>
+            <th>Nama Perusahaan</th>
+            <th>Lokasi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="lowonganTableBody"></tbody>
+      </table>
+    </div>
+    <script>
+      const scriptUrl =
+        "https://script.google.com/macros/s/AKfycbzWZi51PyAZkaREeUCKvaGmZzvVqRR3YtPDLWeBTT6M9TN5TH3x8XBgbQaSPuKe--pY/exec";
+
+      $(document).ready(function () {
+        loadLowongan();
+
+        $("#formLowongan").submit(function (e) {
+          e.preventDefault();
+          const data = {
+            action: "create",
+            posisi: $("#posisi").val(),
+            namaPerusahaan: $("#namaPerusahaan").val(),
+            lokasi: $("#lokasi").val(),
+          };
+
+          $.ajax({
+            url: scriptUrl,
+            type: "GET",
+            data: data,
+            success: function (response) {
+              loadLowongan();
+            },
+          });
+        });
+
+        $("#searchQuery").keyup(function () {
+          const query = $(this).val();
+          $.ajax({
+            url: scriptUrl,
+            type: "GET",
+            data: { action: "search", query: query },
+            dataType: "json",
+            success: function (response) {
+              displayLowongan(response);
+            },
+          });
+        });
+      });
+
+      function loadLowongan() {
+        $.ajax({
+          url: scriptUrl,
+          type: "GET",
+          data: { action: "read" },
+          dataType: "json",
+          success: function (response) {
+            displayLowongan(response);
+          },
+        });
+      }
+
+      function displayLowongan(data) {
+        const tbody = $("#lowonganTableBody");
+        tbody.empty();
+        data.forEach((job) => {
+          tbody.append(`
+      <tr>
+        <td>${job.Nomor}</td>
+        <td>${job.Posisi}</td>
+        <td>${job["Nama Perusahaan"]}</td>
+        <td>${job.Lokasi}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteLowongan('${job.Nomor}')">Hapus</button></td>
+      </tr>
+    `);
+        });
+      }
+
+      function deleteLowongan(nomor) {
+        $.ajax({
+          url: scriptUrl,
+          type: "GET",
+          data: { action: "delete", nomor: nomor },
+          success: function (response) {
+            loadLowongan();
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
